@@ -1,76 +1,85 @@
 <template>
-  <h1>Create an Account</h1>
+    <div class="register-container">
+        <h1 class="title">Register</h1>
 
-  <p>
-    <input type="text" placeholder="Email" v-model="email" />
-  </p>
-  <p>
-    <input type="password" placeholder="Password" v-model="password" />
-  </p>
+        <div v-if="errorMessage" class="notification is-danger">
+            <button class="delete"></button>
+            {{ errorMessage }}
+        </div>
 
-  <p v-if="errorMessage">
-    {{ errorMessage }}
-  </p>
+        <div class="field">
+            <div class="control">
+                <input
+                    type="text"
+                    class="input"
+                    v-model="email"
+                    placeholder="Email"
+                />
+            </div>
+        </div>
 
-  <p>
-    <button @click="register">Submit</button>
-  </p>
-  <p>
-    <button @click="signInWithGoogle">Sign In Google</button>
-  </p>
+        <div class="field">
+            <div class="control">
+                <input
+                    class="input"
+                    type="password"
+                    v-model="password"
+                    placeholder="Password"
+                />
+            </div>
+        </div>
+
+        <div class="field">
+            <button
+                @click="register"
+                class="button is-normal is-dark is-fullwidth"
+            >
+                Submit
+            </button>
+        </div>
+    </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import {
-  getAuth,
-  signInWithPopup,
-  GoogleAuthProvider,
-  createUserWithEmailAndPassword,
-} from "firebase/auth";
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth'
 
-const email = ref("");
-const password = ref("");
-const errorMessage = ref();
+const email = ref('')
+const password = ref('')
+const errorMessage = ref()
 
-const router = useRouter();
+const router = useRouter()
 
 const register = () => {
-  const auth = getAuth();
+    const auth = getAuth()
 
-  createUserWithEmailAndPassword(auth, email.value, password.value)
-    .then((data) => {
-      console.log("SUCCESS! =>", data);
-      router.push("/feed");
-    })
-    .catch((error) => {
-      switch (error.code) {
-        case "auth/invalid-email":
-          errorMessage.value = "Invalid email";
-          break;
-        case "auth/user-not-found":
-          errorMessage.value = "There is no account with that email";
-          break;
-        case "auth/wrong-password":
-          errorMessage.value = "Incorrect password";
-          break;
-        default:
-          errorMessage.value = "Email or password was incorrect";
-          break;
-      }
-    });
-};
-
-const signInWithGoogle = () => {
-  const provider = new GoogleAuthProvider();
-  signInWithPopup(getAuth(), provider)
-    .then((result) => {
-      console.log(result.user);
-      router.push("/feed");
-    })
-    .catch((error) => {
-      console.log("There is no account with that email", error);
-    });
-};
+    createUserWithEmailAndPassword(auth, email.value, password.value)
+        .then((data) => {
+            console.log('SUCCESS! =>', data)
+            router.push('/feed')
+        })
+        .catch((error) => {
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    errorMessage.value = 'Invalid email'
+                    break
+                case 'auth/user-not-found':
+                    errorMessage.value = 'There is no account with that email'
+                    break
+                case 'auth/wrong-password':
+                    errorMessage.value = 'Incorrect password'
+                    break
+                default:
+                    errorMessage.value = 'Email or password was incorrect'
+                    break
+            }
+        })
+}
 </script>
+
+<style scoped>
+.register-container {
+    padding: 2rem;
+}
+</style>
